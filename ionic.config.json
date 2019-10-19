@@ -1,5 +1,5 @@
 {
-  "name": "ionic-capacitor-data-storage-sqlite",
+  "name": "ionic-capacitor-sqlite",
   "integrations": {
     "capacitor": {}
   },

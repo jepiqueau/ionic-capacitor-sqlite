@@ -1,7 +1,7 @@
-# Ionic App to test the capacitor-data-storage-sqlite plugin
-Example of a Ionic Application to test and validate the Capacitor Data Storage SQLite Plugin
+# Ionic App to test the capacitor-sqlite plugin
+Example of a Ionic Application to test and validate the Capacitor SQLite Plugin
 
-[capacitor-data-storage-sqlite](https://github.com/jepiqueau/capacitor-data-storage-sqlite)
+[capacitor-sqlite](https://github.com/jepiqueau/capacitor-sqlite)
 
 ## To run this Project
 ### Clone the project
@@ -9,8 +9,8 @@ Example of a Ionic Application to test and validate the Capacitor Data Storage S
 clone this repo to a new directory:
 
 ```bash
-git clone https://github.com/jepiqueau/ionic-capacitor-data-storage-sqlite.git ionic-capacitor-data-storage-sqlite
-cd ionic-capacitor-data-storage-sqlite
+git clone https://github.com/jepiqueau/ionic-capacitor-sqlite.git ionic-capacitor-sqlite
+cd ionic-capacitor-sqlite
 git remote rm origin
 npm install
 ```
@@ -18,7 +18,7 @@ npm install
 ### init capacitor
 
 ```bash
-npx cap init IonicCapacitorDataStorageSqlite com.example.ioniccapacitordatastoragesqlite
+npx cap init IonicCapacitorSqlite com.example.ioniccapacitorsqlite
 ```
 
 ### first project build
@@ -54,16 +54,16 @@ Xcode will be opened with your project and will index the files. When completed,
 npx cap open android
 ``` 
 Android Studio will be opened with your project and will sync the files.
-In Android Studio go to the file MainActivity in app/src/main/java/com/example/ioniccapacitordatastoragesqlite and modified as follows
+In Android Studio go to the file MainActivity in app/src/main/java/com/example/ioniccapacitorsqlite and modified as follows
 
 ```
-package com.example.ioniccapacitordatastoragesqlite;
+package com.example.ioniccapacitorsqlite;
 
 import android.os.Bundle;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
-import com.jeep.plugin.capacitor.capacitordatastoragesqlite.CapacitorDataStorageSqlite;
+import com.jeep.plugin.capacitor.sqlite.CapacitorSqlite;
 
 
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class MainActivity extends BridgeActivity {
     this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
       // Additional plugins you've installed go here
       // Ex: add(TotallyAwesomePlugin.class);
-      add(CapacitorDataStorageSqlite.class);
+      add(CapacitorSqlite.class);
     }});
   }
 }
@@ -90,25 +90,6 @@ Setup the SDK, i used the Android API 27 platform
 and make Update when asked
 
 When all this is done and your buid is successful, click on the run project button and select your device or emulator, the application will launch and display four buttons.
-
-### running on Web
-
-```bash
-npx cap copy web
-ng serve
-``` 
-
-open your browser on http://localhost:4200/
-
-### running on Electron
-```bash
-npx cap open electron
-```
-
-```bash
-cd electron
-npm run electron:start
-``` 
 
 ### In the App
 

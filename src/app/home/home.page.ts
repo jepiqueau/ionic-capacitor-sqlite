@@ -1,9 +1,9 @@
 
 import { Component } from '@angular/core';
 import { Plugins } from '@capacitor/core';
-import * as CapacitorSQLPlugin from 'capacitor-data-storage-sqlite';
+import * as CapacitorSQLPlugin from 'capacitor-sqlite';
 
-const { CapacitorDataStorageSqlite, Device } = Plugins;
+const { CapacitorSQLite, Device } = Plugins;
 
 @Component({
   selector: 'app-home',
@@ -17,120 +17,110 @@ export class HomePage {
   }
 
   async testPlugin(){ 
-    let storage: any = {};
+    let db: any = {};
     const info = await Device.getInfo();
     console.log('platform ',info.platform)
     if (info.platform === "ios" || info.platform === "android") {
-      storage = CapacitorDataStorageSqlite;
-      console.log('storage ',storage)
-    } else {
-      storage = CapacitorSQLPlugin.CapacitorDataStorageSqlite;     
+      db = CapacitorSQLite;
+      console.log('db ',db)
+    }  else {
+      db = CapacitorSQLPlugin.CapacitorSQLite;     
     }
     //populate some data
     //string
-    let retpopulate: boolean = false;
-    let retiskey = false;
-    let retkeys = false;
-    let retvalues = false;
-    let retkeysvalues = false;
-    let retremove = false;
-    let retclear = false;
-    let result:any = await storage.set({key:"session", value:"Session Opened"});
-    console.log("Save Data : " + result.result);
-    result = await storage.get({key:"session"})
-    console.log('result ',result)
-    console.log("Get Data : " + result.value);
-    let ret1: boolean = false;
-    if (result.value === "Session Opened") ret1 = true;
-    // json
-    let data:any = {'a':20,'b':'Hello World','c':{'c1':40,'c2':'cool'}}
-    await storage.set({key:'testJson',value:JSON.stringify(data)})
-    result = await storage.get({key:"testJson"})
-    console.log("Get Data : " + result.value);
-    let ret2: boolean = false;
-    if (result.value === JSON.stringify(data)) ret2 = true;
-    // number
-    let data1: any = 243.567
-    await storage.set({key:'testNumber',value:data1.toString()})
-    result = await storage.get({key:"testNumber"})
-    console.log("Get Data : " + result.value);
-    let ret3: boolean = false;
-    if (result.value === data1.toString()) ret3 = true;
-    if (ret1 && ret2 && ret3) retpopulate = true;
-    if (retpopulate) document.querySelector('.populate').classList.remove('hidden');
-
-    result = await storage.iskey({key:"testNumber"})
-    console.log("isKey testNumber " + result.result)
-    ret1 = result.result
-    result = await storage.iskey({key:"foo"})
-    console.log("isKey foo " + result.result)
-    ret2 = result.result
-    if (ret1 && !ret2) retiskey = true
-    if (retiskey) document.querySelector('.iskey').classList.remove('hidden');
-    
-    result = await storage.keys()
-    console.log("Get keys : " + result.keys);
-    console.log("Keys length " + result.keys.length)
-    if(result.keys.length === 3 && result.keys[0] === "session"
-        && result.keys[1] === "testJson" && result.keys[2] === "testNumber") {
-      retkeys = true;
-      document.querySelector('.keys').classList.remove('hidden');
-    }
-    result = await storage.values()
-    console.log("Get values : " + result.values);
-    console.log("Values length " + result.values.length)
-    if(result.values.length === 3 && result.values[0] === "Session Opened"
-        && result.values[1] === JSON.stringify(data) && result.values[2] === data1.toString()) {
-      retvalues = true;
-      document.querySelector('.values').classList.remove('hidden');
-    }
-
-    storage.keysvalues().then((result) => {
-      result.keysvalues.forEach(element => {
-        console.log(element)
-      });
-      console.log("KeysValues length " + result.keysvalues.length)
-      if(result.keysvalues.length === 3 &&
-          result.keysvalues[0].key === "session" && result.keysvalues[0].value === "Session Opened" &&
-          result.keysvalues[1].key === "testJson" && result.keysvalues[1].value === JSON.stringify(data) &&
-          result.keysvalues[2].key === "testNumber" && result.keysvalues[2].value === data1.toString()) {
-        retkeysvalues = true;
-        document.querySelector('.keysvalues').classList.remove('hidden');
-        storage.remove({key:"testJson"}).then((result) => {
-          if(result.result) {
-            storage.keysvalues().then(async (res) => {
-              if(res.keysvalues.length === 2 && 
-                res.keysvalues[0].key === "session" && res.keysvalues[0].value === "Session Opened" &&
-                res.keysvalues[1].key === "testNumber" && res.keysvalues[1].value === data1.toString()) {
-                retremove = true;
-                document.querySelector('.remove').classList.remove('hidden');
-              }
-              result = await storage.clear()
-              if(result.result) {
-                let res = await storage.keysvalues()
-                console.log("after clear res.keysvalues.length " + res.keysvalues.length)
-                if(res.keysvalues.length === 0) {
-                  retclear = true;
-                  document.querySelector('.clear').classList.remove('hidden');
-                }
-                if(retpopulate && retiskey && retkeys && retvalues && retkeysvalues && retremove && retclear) {
-                  document.querySelector('.success').classList.remove('hidden');
-                } else {
-                  document.querySelector('.failure').classList.remove('hidden');
-                }
-              } else {
-                document.querySelector('.failure').classList.remove('hidden');
-              }
-            });
-          } else {
-            document.querySelector('.failure').classList.remove('hidden');
-          }
-        });
-      } else {
-        document.querySelector('.failure').classList.remove('hidden');
+    let retOpenDB: boolean = false;
+    let retExecute1: boolean = false;
+    let retExecute2: boolean = false;
+    let retQuery1: boolean = false;
+    let retQuery2: boolean = false;
+    let retRun1: boolean = false;
+    let retRun2: boolean = false;
+    // Open Database
+    let result:any = await db.open({name:"testsqlite"});
+    console.log("Open database : " + result.result);
+    retOpenDB = result.result;
+    if(retOpenDB) {
+      document.querySelector('.openDB').classList.remove('hidden');
+      // Create Tables if not exist
+      let sqlcmd: string = `
+      BEGIN TRANSACTION;
+      CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY NOT NULL,
+          email TEXT UNIQUE NOT NULL,
+          name TEXT,
+          age INTEGER
+      );
+      CREATE TABLE IF NOT EXISTS posts (
+          id INTEGER PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL,
+          body TEXT NOT NULL,
+          published_at DATETIME
+      );
+      PRAGMA user_version = 1;
+      COMMIT TRANSACTION;
+      `;
+      console.log('sqlcmd ',sqlcmd)
+      var retExe: any = await db.execute({statements:sqlcmd});
+      console.log('retExe ',retExe.result)
+      retExecute1 = retExe.result === 0 ? true : false;
+      if (retExecute1) {
+        document.querySelector('.execute1').classList.remove('hidden');        
       }
-    });
+      // Insert some Users
+      sqlcmd = `
+      BEGIN TRANSACTION;
+      DELETE FROM users;
+      INSERT INTO users (name,email,age) VALUES ("Whiteley","Whiteley.com",30);
+      INSERT INTO users (name,email,age) VALUES ("Jones","Jones.com",44);
+      COMMIT TRANSACTION;
+      `;
+      retExe = await db.execute({statements:sqlcmd});
+      retExecute2 = retExe.result >= 1 ? true : false;
+      if (retExecute2) {
+        document.querySelector('.execute2').classList.remove('hidden');        
+      }
+      // Select all Users
+      sqlcmd = "SELECT * FROM users";
+      var retSelect: any = await db.query({statement:sqlcmd});
+      console.log('retSelect ',retSelect)
+      retQuery1 = retSelect.result.length === 2 ? true : false;
+      if (retQuery1) {
+        document.querySelector('.query1').classList.remove('hidden');        
+      }
+      // Insert a new User with SQL and Values
 
+      sqlcmd = "INSERT INTO users (name,email,age) VALUES (?,?,?)";
+      let values: Array<Array<any>>  = [["Simpson","TEXT"],["Simpson@example.com","TEXT"],[69,"INTEGER"]];
+      var retRun: any = await db.run({statement:sqlcmd,values:values});
+      retRun1 = retRun.result === 1 ? true : false;
+      if (retRun1) {
+        document.querySelector('.run1').classList.remove('hidden');        
+      }
+
+      // Insert a new User with SQL
+      sqlcmd = `INSERT INTO users (name,email,age) VALUES ("Brown","Brown@example.com",15)`;
+      retRun = await db.run({statement:sqlcmd,values:[]});
+      retRun2 = retRun.result === 1 ? true : false;
+      if (retRun2) {
+        document.querySelector('.run2').classList.remove('hidden');        
+      }
+      // Select all Users
+      sqlcmd = "SELECT * FROM users";
+      retSelect = await db.query({statement:sqlcmd});
+      console.log('retSelect ',retSelect)
+      retQuery2 = retSelect.result.length === 4 ? true : false;
+      if (retQuery2) {
+        document.querySelector('.query2').classList.remove('hidden');        
+      }
+
+      if(!retExecute1 || !retExecute2 || !retQuery1 || !retRun1 || !retRun2  || !retQuery2) {
+        document.querySelector('.failure').classList.remove('hidden');
+      } else {
+        document.querySelector('.success').classList.remove('hidden');
+      }
+    } else {
+      document.querySelector('.failure').classList.remove('hidden');
+    }
   }
 
 }
