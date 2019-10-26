@@ -2,7 +2,7 @@ PODS:
   - Capacitor (1.2.1):
     - CapacitorCordova (= 1.2.1)
   - CapacitorCordova (1.2.1)
-  - CapacitorSqlite (0.0.1-alpha.8):
+  - CapacitorSqlite (0.0.1-alpha.13):
     - Capacitor
     - SQLite.swift
   - SQLite.swift (0.12.2):
@@ -29,7 +29,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: e89d041bf912bccbbccab2e07d0f32aa4ca0f11a
   CapacitorCordova: 806e405d02de22c10a9b20a2ee4fb3f097cfb8a5
-  CapacitorSqlite: cb6102195bc4d85eb4bc146494534a43ed0adc6b
+  CapacitorSqlite: 5efd6f929dfe09a92a8521947f05bdc97cd3cc7d
   SQLite.swift: d2b4642190917051ce6bd1d49aab565fe794eea3
 
 PODFILE CHECKSUM: cfa48352f4099ba526608ed77740dfabe6e50188

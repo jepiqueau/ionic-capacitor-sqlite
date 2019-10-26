@@ -19,10 +19,10 @@ export class HomePage {
   async testPlugin(){ 
     let db: any = {};
     const info = await Device.getInfo();
-    console.log('platform ',info.platform)
+//    console.log('platform ',info.platform)
     if (info.platform === "ios" || info.platform === "android") {
       db = CapacitorSQLite;
-      console.log('db ',db)
+//      console.log('db ',db)
     }  else {
       db = CapacitorSQLPlugin.CapacitorSQLite;     
     }
@@ -33,9 +33,13 @@ export class HomePage {
     let retExecute2: boolean = false;
     let retQuery1: boolean = false;
     let retQuery2: boolean = false;
+    let retQuery3: boolean = false;
     let retRun1: boolean = false;
     let retRun2: boolean = false;
+    let echo:any = await db.echo({value:"Hello from JEEP"});
+//    console.log("echo ",echo)
     // Open Database
+
     let result:any = await db.open({name:"testsqlite"});
     console.log("Open database : " + result.result);
     retOpenDB = result.result;
@@ -62,7 +66,7 @@ export class HomePage {
       console.log('sqlcmd ',sqlcmd)
       var retExe: any = await db.execute({statements:sqlcmd});
       console.log('retExe ',retExe.result)
-      retExecute1 = retExe.result === 0 ? true : false;
+      retExecute1 = retExe.result === 0 || retExe.result === 1 ? true : false;
       if (retExecute1) {
         document.querySelector('.execute1').classList.remove('hidden');        
       }
@@ -81,7 +85,7 @@ export class HomePage {
       }
       // Select all Users
       sqlcmd = "SELECT * FROM users";
-      var retSelect: any = await db.query({statement:sqlcmd});
+      var retSelect: any = await db.query({statement:sqlcmd,values:[]});
       console.log('retSelect ',retSelect)
       retQuery1 = retSelect.result.length === 2 ? true : false;
       if (retQuery1) {
@@ -90,7 +94,7 @@ export class HomePage {
       // Insert a new User with SQL and Values
 
       sqlcmd = "INSERT INTO users (name,email,age) VALUES (?,?,?)";
-      let values: Array<Array<any>>  = [["Simpson","TEXT"],["Simpson@example.com","TEXT"],[69,"INTEGER"]];
+      let values: Array<any>  = ["Simpson","Simpson@example.com",69];
       var retRun: any = await db.run({statement:sqlcmd,values:values});
       retRun1 = retRun.result === 1 ? true : false;
       if (retRun1) {
@@ -104,16 +108,31 @@ export class HomePage {
       if (retRun2) {
         document.querySelector('.run2').classList.remove('hidden');        
       }
+
       // Select all Users
       sqlcmd = "SELECT * FROM users";
-      retSelect = await db.query({statement:sqlcmd});
-      console.log('retSelect ',retSelect)
+      retSelect = await db.query({statement:sqlcmd,values:[]});
+      console.log('retSelect ',retSelect.result.length)
       retQuery2 = retSelect.result.length === 4 ? true : false;
+      for (let i:number =0; i< retSelect.result.length; i++) {
+        console.log("results : ",i,retSelect.result[i]);
+      }
       if (retQuery2) {
         document.querySelector('.query2').classList.remove('hidden');        
       }
+      // Select Users with age > 35
+      sqlcmd = "SELECT name,email,age FROM users WHERE age > ?";
+      retSelect = await db.query({statement:sqlcmd,values:["35"]});
+      console.log('retSelect ',retSelect.result.length)
+      retQuery3 = retSelect.result.length === 2 ? true : false;
+      for (let i:number =0; i< retSelect.result.length; i++) {
+        console.log("results : ",i,retSelect.result[i]);
+      }
+      if (retQuery3) {
+        document.querySelector('.query3').classList.remove('hidden');        
+      }
 
-      if(!retExecute1 || !retExecute2 || !retQuery1 || !retRun1 || !retRun2  || !retQuery2) {
+      if(!retExecute1 || !retExecute2 || !retQuery1 || !retRun1 || !retRun2 || !retQuery2 || !retQuery3) {
         document.querySelector('.failure').classList.remove('hidden');
       } else {
         document.querySelector('.success').classList.remove('hidden');

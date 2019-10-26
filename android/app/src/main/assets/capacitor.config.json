@@ -1,0 +1,7 @@
+{
+  "appId": "com.jeep.app.ioniccapacitorsqlite",
+  "appName": "ionic-capacitor-sqlite",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}
