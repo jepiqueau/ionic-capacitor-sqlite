@@ -1,7 +1,0 @@
-{
-  "name": "ionic-capacitor-sqlite",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
